@@ -78,8 +78,16 @@ int main(int argc, char *argv[])
             // read RGB triple from infile
             fread(&triple, sizeof(RGBTRIPLE), 1, inptr);
             
-            // extract secret message
+            // extract secret message -> first stage
             if(triple.rgbtRed == 0xff) triple.rgbtRed = 0x00;
+            
+            // make the message clear
+            if(triple.rgbtRed + triple.rgbtGreen + triple.rgbtBlue == 0x00)
+            {
+                triple.rgbtRed = 0xff;
+                triple.rgbtGreen = 0xff;
+                triple.rgbtBlue = 0xff;
+            }
 
             // write RGB triple to outfile
             fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
