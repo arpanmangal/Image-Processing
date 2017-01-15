@@ -103,9 +103,7 @@ int main(int argc, char *argv[])
                 for (int k = 0; k < n; k++)
                 {
                     fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
-                    //printf("P ");
                 }
-                //printf("  ");
             }
 
             // skip over padding, if any
@@ -116,15 +114,12 @@ int main(int argc, char *argv[])
             {
                 fputc(0x00, outptr);
             }
-            //puts("");
-            
             // move back to start of the line if not last iteration
             if (repeat != n - 1)
             {
                 fseek(inptr, -(LONG)(bi.biWidth * sizeof(RGBTRIPLE) + padding), SEEK_CUR);
             }
         }
-        //puts("");
     }
 
     // close infile
