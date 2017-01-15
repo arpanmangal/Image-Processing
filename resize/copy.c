@@ -1,5 +1,5 @@
 /**
- * Copies a BMP piece by piece, and change color of pixels to get secret message.
+ * Copies a BMP piece by piece, just because.
  */
        
 #include <stdio.h>
@@ -7,14 +7,12 @@
 
 #include "bmp.h"
 
-
-
 int main(int argc, char *argv[])
 {
     // ensure proper usage
     if (argc != 3)
     {
-        fprintf(stderr, "Usage: ./whodunit infile outfile\n");
+        fprintf(stderr, "Usage: ./copy infile outfile\n");
         return 1;
     }
 
@@ -64,50 +62,20 @@ int main(int argc, char *argv[])
     fwrite(&bi, sizeof(BITMAPINFOHEADER), 1, outptr);
 
     // determine padding for scanlines
-    int padding =  (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
+    int padding = (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
 
     // iterate over infile's scanlines
     for (int i = 0, biHeight = abs(bi.biHeight); i < biHeight; i++)
     {
         // iterate over pixels in scanline
-        for (int j = 0, blue = 0; j < bi.biWidth; j++)
+        for (int j = 0; j < bi.biWidth; j++)
         {
-            int tmp_blue;
-            
             // temporary storage
             RGBTRIPLE triple;
 
             // read RGB triple from infile
             fread(&triple, sizeof(RGBTRIPLE), 1, inptr);
-            
-            // extract secret message -> first stage
-            if (triple.rgbtRed == 0xff)
-            {
-                triple.rgbtRed = 0x00;
-            }
-            
-            // make the message clear
-            if (triple.rgbtRed + triple.rgbtGreen + triple.rgbtBlue == 0x00)
-            {
-                triple.rgbtRed = 0xff;
-                triple.rgbtGreen = 0xff;
-                triple.rgbtBlue = 0xff;
-            }
-            
-            // smoothening the text
-            if (triple.rgbtRed > 0x00)
-            {
-                triple.rgbtRed = 0xff;
-            }
-            
-            // smoothening the background
-            tmp_blue = (triple.rgbtRed == 0x00) ? 1 : 0;
-            if (blue == 1)
-            {
-                triple.rgbtRed = 0x00;
-            }
-            blue = tmp_blue;
-            
+
             // write RGB triple to outfile
             fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
         }

@@ -1,5 +1,5 @@
 /**
- * Copies a BMP piece by piece, and change color of pixels to get secret message.
+ * Copies a BMP piece by piece, just because.
  */
        
 #include <stdio.h>
@@ -7,20 +7,21 @@
 
 #include "bmp.h"
 
-
-
 int main(int argc, char *argv[])
 {
     // ensure proper usage
-    if (argc != 3)
+    if (argc != 4)
     {
-        fprintf(stderr, "Usage: ./whodunit infile outfile\n");
+        fprintf(stderr, "Usage: ./resize n infile outfile\n");
         return 1;
     }
 
+    // resize factor
+    int n = atoi(argv[1]);
+    
     // remember filenames
-    char *infile = argv[1];
-    char *outfile = argv[2];
+    char *infile = argv[2];
+    char *outfile = argv[3];
 
     // open input file 
     FILE *inptr = fopen(infile, "r");
@@ -57,57 +58,43 @@ int main(int argc, char *argv[])
         return 4;
     }
 
+    // outfile's headers
+    BITMAPFILEHEADER bf_out = bf;
+    BITMAPINFOHEADER bi_out = bi;
+    
+    // change outfile's headers as per need
+    bi_out.biWidth *= n;
+    bi_out.biHeight *= n;
+
+    
     // write outfile's BITMAPFILEHEADER
-    fwrite(&bf, sizeof(BITMAPFILEHEADER), 1, outptr);
+    fwrite(&bf_out, sizeof(BITMAPFILEHEADER), 1, outptr);
 
     // write outfile's BITMAPINFOHEADER
-    fwrite(&bi, sizeof(BITMAPINFOHEADER), 1, outptr);
+    fwrite(&bi_out, sizeof(BITMAPINFOHEADER), 1, outptr);
 
-    // determine padding for scanlines
-    int padding =  (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
+    // determine padding for scanlines of infile
+    int padding = (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
+    
+    // determine padding for scanlines of outfile
+    int padding_out = (4 - (bi_out.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
+    
+    // change output file's size
+    bi_out.biSizeImage = ((DWORD)bi_out.biWidth * (DWORD)sizeof(RGBTRIPLE) + (DWORD)padding_out) * ((DWORD)bi_out.biHeight);
+    bf_out.bfSize = bi_out.biSizeImage + 54;
 
     // iterate over infile's scanlines
     for (int i = 0, biHeight = abs(bi.biHeight); i < biHeight; i++)
     {
         // iterate over pixels in scanline
-        for (int j = 0, blue = 0; j < bi.biWidth; j++)
+        for (int j = 0; j < bi.biWidth; j++)
         {
-            int tmp_blue;
-            
             // temporary storage
             RGBTRIPLE triple;
 
             // read RGB triple from infile
             fread(&triple, sizeof(RGBTRIPLE), 1, inptr);
-            
-            // extract secret message -> first stage
-            if (triple.rgbtRed == 0xff)
-            {
-                triple.rgbtRed = 0x00;
-            }
-            
-            // make the message clear
-            if (triple.rgbtRed + triple.rgbtGreen + triple.rgbtBlue == 0x00)
-            {
-                triple.rgbtRed = 0xff;
-                triple.rgbtGreen = 0xff;
-                triple.rgbtBlue = 0xff;
-            }
-            
-            // smoothening the text
-            if (triple.rgbtRed > 0x00)
-            {
-                triple.rgbtRed = 0xff;
-            }
-            
-            // smoothening the background
-            tmp_blue = (triple.rgbtRed == 0x00) ? 1 : 0;
-            if (blue == 1)
-            {
-                triple.rgbtRed = 0x00;
-            }
-            blue = tmp_blue;
-            
+
             // write RGB triple to outfile
             fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
         }
