@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     int padding_out = (4 - (bi_out.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
     
     // change output file's size
-    bi_out.biSizeImage = ((DWORD)bi_out.biWidth * (DWORD)sizeof(RGBTRIPLE) + (DWORD)padding_out) * ((DWORD)bi_out.biHeight);
+    bi_out.biSizeImage = ((DWORD) bi_out.biWidth * (DWORD) sizeof(RGBTRIPLE) + (DWORD) padding_out) * abs(bi_out.biHeight);
     bf_out.bfSize = bi_out.biSizeImage + 54;
 
     // iterate over infile's scanlines
@@ -103,7 +103,9 @@ int main(int argc, char *argv[])
                 for (int k = 0; k < n; k++)
                 {
                     fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
+                    //printf("P ");
                 }
+                //printf("  ");
             }
 
             // skip over padding, if any
@@ -114,13 +116,15 @@ int main(int argc, char *argv[])
             {
                 fputc(0x00, outptr);
             }
+            //puts("");
             
             // move back to start of the line if not last iteration
             if (repeat != n - 1)
             {
-                fseek(inptr, -(bi.biWidth * sizeof(RGBTRIPLE) + padding), SEEK_CUR);
+                fseek(inptr, -(LONG)(bi.biWidth * sizeof(RGBTRIPLE) + padding), SEEK_CUR);
             }
         }
+        //puts("");
     }
 
     // close infile
