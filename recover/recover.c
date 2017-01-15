@@ -47,10 +47,43 @@ int main(int argc, char *argv[])
     // temperory storage
     jpeg block;
     
-    // read until end of file is reached
-    while (fread(&block, 1, 512,inptr) == 512)
+    // keep track of images
+    int num_of_imag = 0;
+    
+    // keep track of file ptr
+    int num_of_bytes;
+    
+    // read until first jpeg reached
+    num_of_bytes = fread(&block, 1, 512,inptr);
+    while (!is_jpeg(block) && num_of_bytes == 512)
     {
+        fread(&block, 1, 512,inptr);
+    }
         
+    // create jpegs until EOF is reached
+    int new_jpeg = 1;
+    char filename[10];
+    FILE* img;
+    while (num_of_bytes == 512)
+    {
+        if (new_jpeg == 1)
+        {
+            // open a file
+            num_of_imag++;
+            sprintf(filename, "%03i.jpg", num_of_imag);
+            img = fopen(filename, "w");
+            new_jpeg = 0;
+        }
+        
+        // write into file
+        fwrite(&block, 1, 512, img);
+        
+        // read next block
+        num_of_bytes = fread(&block, 1, 512,inptr);
+        if (is_jpeg(block))
+        {
+            new_jpeg = 1;
+        }
     }
 
     // close infile
