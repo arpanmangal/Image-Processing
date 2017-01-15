@@ -70,8 +70,10 @@ int main(int argc, char *argv[])
     for (int i = 0, biHeight = abs(bi.biHeight); i < biHeight; i++)
     {
         // iterate over pixels in scanline
-        for (int j = 0; j < bi.biWidth; j++)
+        for (int j = 0, blue = 0; j < bi.biWidth; j++)
         {
+            int tmp_blue;
+            
             // temporary storage
             RGBTRIPLE triple;
 
@@ -88,16 +90,15 @@ int main(int argc, char *argv[])
                 triple.rgbtGreen = 0xff;
                 triple.rgbtBlue = 0xff;
             }
+            
+            // smoothening the text
             if (triple.rgbtRed > 0x00) triple.rgbtRed = 0xff;
-            if (i < 50) triple.rgbtRed = 0xff;
-            else if (i < 100) triple.rgbtRed = 0xf0;
-            else if (i < 150) triple.rgbtRed = 0xe0;
-            else if (i < 200) triple.rgbtRed = 0xd0;
-            else if (i < 250) triple.rgbtRed = 0xc0;
-            else if (i < 300) triple.rgbtRed = 0xa0;
-            else if (i < 350) triple.rgbtRed = 0x80;
-            else if (i < 250) triple.rgbtRed = 0x0;
-
+            
+            // smoothening the background
+            tmp_blue = (triple.rgbtRed == 0x00) ? 1 : 0;
+            if (blue == 1) (triple.rgbtRed = 0x00);
+            blue = tmp_blue;
+            
             if(j % 50 == 0  && i % 5 == 0) printf("%x%x%x ", triple.rgbtBlue, triple.rgbtGreen, triple.rgbtRed);
             // write RGB triple to outfile
             fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
