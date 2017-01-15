@@ -1,0 +1,34 @@
+
+1. The <stdint.h> is a header file which declare sets of integer types having specified widths, and define corresponding sets of
+    macros. It also define macros that specify limits of integer types corresponding to types defined in other standard headers.
+
+2. Because these will remain same across all platforms and systems unlike int which is 2 or 4 bytes depending on the system.
+
+3. BYTE   1 byte
+   DWORD  4 byte
+   LONG   4 byte
+   WORD   2 byte
+   
+4. The first two bytes of a BMP is a WORD and is set to the signature word BM (0x4D42) to indicate bitmap.
+
+5. bfSize specifies the size, in bytes, of the bitmap file.
+   biSize specifies the size of the structure in bytes.
+ 
+6. Sign of biHeight gives the orientation of the bitmap.If biHeight is negative, the bitmap is a top-down DIB and its origin is the
+   upper left corner.
+   
+7. The biBitCount member of the BITMAPINFOHEADER structure determines the number of
+	bits that define each pixel and the maximum number of colors in the bitmap.
+	
+8. fopen may return NULL in line 24 if the file does not exist or could not be opened due to any other reason.
+   It may return NULL in line 32 if we ran out of memory and so another file cannot be created.
+   
+9. It is because the third argument specifies the number of elements to read and here we are reading in 1 RGB triple at a time.
+
+10. From this relation padding =  (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4
+    we get padding = 3.
+
+11. It skips over any padding and looks for the next pixel (RGB triple).
+
+12. This is an integer constant which, when used as the whence argument to the fseek or fseeko function,
+	specifies that the offset provided is relative to the current file position.

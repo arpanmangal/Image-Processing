@@ -81,10 +81,13 @@ int main(int argc, char *argv[])
             fread(&triple, sizeof(RGBTRIPLE), 1, inptr);
             
             // extract secret message -> first stage
-            if(triple.rgbtRed == 0xff) triple.rgbtRed = 0x00;
+            if (triple.rgbtRed == 0xff)
+            {
+                triple.rgbtRed = 0x00;
+            }
             
             // make the message clear
-            if(triple.rgbtRed + triple.rgbtGreen + triple.rgbtBlue == 0x00)
+            if (triple.rgbtRed + triple.rgbtGreen + triple.rgbtBlue == 0x00)
             {
                 triple.rgbtRed = 0xff;
                 triple.rgbtGreen = 0xff;
@@ -92,18 +95,22 @@ int main(int argc, char *argv[])
             }
             
             // smoothening the text
-            if (triple.rgbtRed > 0x00) triple.rgbtRed = 0xff;
+            if (triple.rgbtRed > 0x00)
+            {
+                triple.rgbtRed = 0xff;
+            }
             
             // smoothening the background
             tmp_blue = (triple.rgbtRed == 0x00) ? 1 : 0;
-            if (blue == 1) (triple.rgbtRed = 0x00);
+            if (blue == 1)
+            {
+                triple.rgbtRed = 0x00;
+            }
             blue = tmp_blue;
             
-            if(j % 50 == 0  && i % 5 == 0) printf("%x%x%x ", triple.rgbtBlue, triple.rgbtGreen, triple.rgbtRed);
             // write RGB triple to outfile
             fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
         }
-        puts("");
 
         // skip over padding, if any
         fseek(inptr, padding, SEEK_CUR);
