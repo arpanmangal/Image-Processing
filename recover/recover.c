@@ -15,11 +15,13 @@ typedef struct
 
 int is_jpeg(jpeg imag)
 {
-   if (imag.buffer[0] == 0xff &&
-           imag.buffer[1] == 0xd8 &&
-           imag.buffer[2] == 0xff &&
+    if (imag.buffer[0] == 0xff && 
+           imag.buffer[1] == 0xd8 && 
+           imag.buffer[2] == 0xff && 
            (imag.buffer[3] & 0xf0) == 0xe0)
+    {
         return 1;
+    }
         
     return 0;
 }
@@ -69,8 +71,8 @@ int main(int argc, char *argv[])
         if (new_jpeg == 1)
         {
             // open a file
-            num_of_imag++;
             sprintf(filename, "%03i.jpg", num_of_imag);
+            num_of_imag++;
             img = fopen(filename, "w");
             new_jpeg = 0;
         }
