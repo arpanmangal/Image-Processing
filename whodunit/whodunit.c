@@ -88,10 +88,11 @@ int main(int argc, char *argv[])
                 triple.rgbtGreen = 0xff;
                 triple.rgbtBlue = 0xff;
             }
-
+            if(j % 50 == 0  && i % 5 == 0) printf("%x%x%x ", triple.rgbtBlue, triple.rgbtGreen, triple.rgbtRed);
             // write RGB triple to outfile
             fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
         }
+        puts("");
 
         // skip over padding, if any
         fseek(inptr, padding, SEEK_CUR);
