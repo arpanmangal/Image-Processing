@@ -99,7 +99,11 @@ int main(int argc, char *argv[])
                 fread(&triple, sizeof(RGBTRIPLE), 1, inptr);
 
                 // write RGB triple to outfile
-                fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
+                // write each pixel n times:
+                for (int k = 0; k < n; k++)
+                {
+                    fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
+                }
             }
 
             // skip over padding, if any
