@@ -1,4 +1,4 @@
-# Pset4: Image Analysis
+# Pset4: Image Processing
 ----------------------------------------
 
 This consists of three tasks -
